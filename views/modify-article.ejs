@@ -1,0 +1,29 @@
+<html>
+    <head></head>
+    <body>
+        <div>
+            <div id="form">
+                <p>title<input type="text" id="title" name="title" value="<%=params.title%>"/></p>
+                <p>content<input type="text" id="content" name="content" value="<%=params.content%>"/></p>
+            </div>
+            <button name="<%=params.id%>">PUT</button>
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+        $("button").on("click",function(e){
+               var title = document.querySelector("#title").value
+               var content = document.querySelector("#content").value
+               $.ajax({
+                   url:'http://127.0.0.1:3000/article?id='+e.target.name,
+                   type:'PUT',
+                   data:{title:title,content:content},
+                   headers:{Accept:"text/html"},
+                   success:function(data){
+                       console.log(data)
+                       window.location = data
+                   }
+               })
+           })
+    </script>
+</html>

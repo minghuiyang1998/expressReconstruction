@@ -1,0 +1,32 @@
+<html>
+    <head></head>
+    <body>
+        <div>
+            <form action="http://127.0.0.1:3000/articles" method="POST" enctype="multipart/form-data">
+                <p>title<input type="text" id="title" name="title" value=""/></p>
+                <p>content<input type="text" id="content" name="content" value=""/></p>
+                <p>image<input type="file" id="image" name="image" value="" /></p>
+                <input type="submit" value="Submit"/> 
+            </form>
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+        // $("button").on("click",function(e){
+        //        var title = document.querySelector("#title").value
+        //        var content = document.querySelector("#content").value
+        //        var image = document.querySelector("#image").value
+        //        $.ajax({
+        //            url:'http://127.0.0.1:8080/articles',
+        //            type:'POST',
+        //            data:{title:title,content:content,image:image},
+        //            headers:{Accept:"text/html"},
+        //            success:function(data){
+        //                console.log(data)
+        //                window.location = data
+        //            }
+        //        })
+        // })
+
+    </script>
+</html>

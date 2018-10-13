@@ -1,0 +1,33 @@
+<html>
+    <head></head>
+    <body>
+        <ul id="article-list">
+            <%if(articles.length!=0){
+                articles.forEach((a)=>{%>
+                    <li id="<%=a%>">
+                       <a href="http://127.0.0.1:8080/article?id=<%=a%>"><%=a%></a>
+                       <a href="http://127.0.0.1:8080/article/<%=a%>/edit">modify</a>
+                       <button  name="<%=a%>">delete</button>
+                    </li>
+                <%})%>
+            <%}%>
+        </ul>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript">
+           $("button").on("click",function(e){
+               $.ajax({
+                   url:'http://127.0.0.1:8080/article?id='+e.target.name,
+                   type:'DELETE',
+                   headers:{Accept:"text/plain"},
+                   success:function(data){
+                        console.log(e.target.name)
+                        var node = document.getElementById(e.target.name)
+                        //var nodeToDelete = document.querySelector("#"+e.target.name)
+                        var list = document.querySelector('#article-list')
+                        list.removeChild(node)
+                   }
+               })
+           })
+        </script>
+    </body>
+</html>

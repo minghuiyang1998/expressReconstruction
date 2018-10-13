@@ -1,0 +1,14 @@
+<html>
+    <head></head>
+    <body>
+        <div id="content">
+            <%if(Object.keys(params).length != 0){%>
+                <p>content:<%=params.content%></p>
+                <p>title:<%=params.title%></p>
+                <%if(Object.keys(params).indexOf('file')!= -1){%>
+                    <img src="<%=params.file%>"/>
+                <%}%>
+            <%}%>
+        </div>
+    </body>
+</html>
