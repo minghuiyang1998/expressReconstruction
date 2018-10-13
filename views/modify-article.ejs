@@ -15,7 +15,7 @@
                var title = document.querySelector("#title").value
                var content = document.querySelector("#content").value
                $.ajax({
-                   url:'http://127.0.0.1:3000/article?id='+e.target.name,
+                   url:'http://127.0.0.1:3000/article/'+e.target.name,
                    type:'PUT',
                    data:{title:title,content:content},
                    headers:{Accept:"text/html"},
