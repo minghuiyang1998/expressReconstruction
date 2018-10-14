@@ -95,14 +95,15 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
   }
  
   fs.writeFileSync(path.resolve('data/articles', id), JSON.stringify(article_params))
-
+  console.log(req.accepts('application/json')==='application/json')
   if(req.query['_method']) { 
+    console.log('') 
     res.redirect("/article/" + id)
   }else {
     res.send("/article/" + id)   
   }
 })
-
+ 
 router.delete('/article/:articleId', function (req, res) {
   var id = req.params.articleId
   var file = fs.readFileSync(path.resolve('data/articles', id))

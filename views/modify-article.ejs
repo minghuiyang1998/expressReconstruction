@@ -37,6 +37,7 @@
 
                var xhr = new XMLHttpRequest()
                xhr.open('PUT','http://127.0.0.1:3000/article/'+e.target.name)
+               xhr.setRequestHeader('Accept','application/json')
                xhr.send(data)
                xhr.onreadystatechange = function(){
                 if((xhr.status>=200 &&xhr.status<300)||xhr.status == 304){
