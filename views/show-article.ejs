@@ -5,7 +5,7 @@
             <%if(Object.keys(params).length != 0){%>
                 <p>content:<%=params.content%></p>
                 <p>title:<%=params.title%></p>
-                <%if(Object.keys(params).indexOf('file')!= -1){%>
+                <%if(params.file){%>
                     <img src="<%=params.file%>"/>
                 <%}%>
             <%}%>

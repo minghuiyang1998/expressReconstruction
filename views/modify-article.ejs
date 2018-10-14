@@ -3,30 +3,64 @@
     <body>
         <div>
             <div id="form">
+                <p>title<input type="text" id="title1" name="title" value="<%=params.title%>"/></p>
+                <p>content<input type="text" id="content1" name="content" value="<%=params.content%>"/></p>
+                <p>image<input type="file" id="image1" name="image" value=""/></p>
+            </div>
+            <button name="<%=params.id%>">PUT</button>
+        </div>
+        <div>
+            <p>test _method</p>
+            <form action="http://127.0.0.1:3000/article/<%=params.id%>?_method=PUT" method="POST" enctype="multipart/form-data">
                 <p>title<input type="text" id="title" name="title" value="<%=params.title%>"/></p>
                 <p>content<input type="text" id="content" name="content" value="<%=params.content%>"/></p>
-            </div>
-            <!--把图片加上吧-->
-            <!--img-->
-            <!--input:file-->
-            <button name="<%=params.id%>">PUT</button>
+                <p>image<input type="file" id="image" name="image" value="" /></p>
+                <input type="submit" value="put_method"/> 
+            </form>
         </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
         $("button").on("click",function(e){
-               var title = document.querySelector("#title").value
-               var content = document.querySelector("#content").value
-               $.ajax({
-                   url:'http://127.0.0.1:3000/article/'+e.target.name,
-                   type:'PUT',
-                   data:{title:title,content:content},
-                   headers:{Accept:"text/html"},
-                   success:function(data){
-                       console.log(data)
-                       window.location = data
-                   }
-               })
+               var title = $("#title1").val()
+               var content = $("#content1").val()
+               var data = new FormData()
+               data.append('title',title)
+               data.append('content',content)
+               
+               if($('#image1')[0].files.length != 0){
+                    var image = $("#image1")[0].files[0]
+                    console.log(image)
+                    var blob = new Blob([image]);
+                    data.append('image',blob)
+               }
+
+               var xhr = new XMLHttpRequest()
+               xhr.open('PUT','http://127.0.0.1:3000/article/'+e.target.name)
+               xhr.send(data)
+               xhr.onreadystatechange = function(){
+                if((xhr.status>=200 &&xhr.status<300)||xhr.status == 304){
+                    window.location = xhr.response
+                }
+               }
+
+            //    $.ajax({
+            //        url:'http://127.0.0.1:3000/article/'+e.target.name,
+            //        type:'PUT',
+            //        processData:false,
+            //        contentType:false,
+            //        data:data,
+            //        success:function(data){
+            //            console.log(data)
+            //            //window.location = data
+            //        }
+            //    })
+                
+            // $("#image").on("change",function(e){
+            //     console.log(e.target.files)
+            //     image = e.target.files
+            // })
            })
     </script>
 </html>
+
