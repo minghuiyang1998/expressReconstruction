@@ -1,3 +1,4 @@
+"use strict"
 var express = require('express');
 var fs = require('fs')
 var path = require('path')
@@ -6,6 +7,7 @@ var upload = multer({ dest: "uploads/" }); // for parsing multipart/form-data
 var router = express.Router();
 var sqlite3 = require('sqlite3').verbose()
 var db = new sqlite3.Database('myDatabase.db')
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -47,7 +49,7 @@ router.get('/article/:articleId', function (req, res) {
         throw new Error(err)
       }
 
-      article_params = article[0]
+      var article_params = article[0]
       // if (article_params.file) {
       //   article_params.file = "/images/" + article_params.file
       // }
