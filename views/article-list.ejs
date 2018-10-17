@@ -4,8 +4,8 @@
         <ul id="article-list">
             <%if(articles.length!=0){
                 articles.forEach((a)=>{%>
-                    <li id="<%=a.title%>">
-                       <a href="http://127.0.0.1:3000/article/<%=a.id%>"><%=a.title%></a>
+                    <li id="<%=a.id%>">
+                       <a href="http://127.0.0.1:3000/article/<%=a.id%>"><%=a.id%></a>
                        <a href="http://127.0.0.1:3000/article/<%=a.id%>/edit">modify</a>
                        <button  name="<%=a.id%>">delete</button>
                     </li>

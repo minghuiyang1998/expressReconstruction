@@ -19,24 +19,30 @@ router.get('/article/new', function (req, res) {
   console.log("new")
   res.render('new-article')
 })
-
 /*POST articles */
 router.post('/articles', upload.any(), function (req, res) {
-  var id = Date.now().toString()
   var data = {}
   data.title = req.body.title
   data.content = req.body.content
 
+  var  posterName = null
   if (req.files.length != 0) {
-    var fileName = id + '_poster'
-    data.file = fileName
-    var filePath = req.files[0].path
-    var file = fs.readFileSync(filePath)
-    fs.writeFileSync(path.resolve('data/images', fileName), file)
+    posterName = Date.now().toString() + '_poster'
+    var posterPath = req.files[0].path
+    fs.writeFileSync(path.resolve('data/images',posterName), fs.readFileSync(posterPath))
   }
 
-  fs.writeFileSync(path.resolve('data/articles', id), JSON.stringify(data))
-  res.redirect("/article/" + id)
+  db.serialize(function(){
+    db.run("INSERT INTO Article(title,content,poster) values($title, $content, $poster)",{$title:data.title, $content:data.content, $poster:posterName}
+          ,function(err){
+            if(err){
+              throw new Error(err)
+            }
+            console.log(this)
+            res.redirect("/article/" + this.lastID)
+          })
+
+  })
 })
 
 /*GET article/:articleId page */
@@ -44,15 +50,15 @@ router.get('/article/:articleId', function (req, res) {
   var id = req.params.articleId
 
   db.serialize(function () {
-    db.all("SELECT * FROM Article WHERE id = $aid", { $aid: 1 }, function (err, article) {
+    db.get("SELECT * FROM Article WHERE id = $aid", { $aid: id }, function (err, article) {
       if(err){
         throw new Error(err)
       }
 
-      var article_params = article[0]
-      // if (article_params.file) {
-      //   article_params.file = "/images/" + article_params.file
-      // }
+      var article_params = article
+      if (article_params.poster) {
+        article_params.poster = "/images/" + article_params.poster
+      }
       res.render('show-article', { article_params: article_params })
     })
 
@@ -79,12 +85,12 @@ router.get('/articles', function (req, res) {
 router.get('/article/:articleId/edit', function (req, res) {
   var id = req.params.articleId
   db.serialize(function () {
-    db.all('SELECT * FROM Article WHERE id = $aid', { $aid: 1 }, function (err, article) {
+    db.get('SELECT * FROM Article WHERE id = $aid', { $aid: id }, function (err, article) {
       if(err){
         throw new Error(err)
       }
 
-      var article_params = article[0]
+      var article_params = article
       res.render('modify-article', { article_params: article_params })
     })
   })
@@ -98,20 +104,15 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
   data.title = req.body.title
   data.content = req.body.content
 
-  console.log(req.body)
-  console.log(req.files)
-
   //读取原文件
   db.serialize(function () {
-    db.all("SELECT * FROM Article WHERE id = $aid", { $aid: 1 }, function (err, article) {
+    db.get("SELECT * FROM Article WHERE id = $aid", { $aid: id }, function (err, article) {
       if(err){
         throw new Error(err)
       }
 
       console.log(article)
-
-      var article = fs.readFileSync(path.resolve('data/articles', id))
-      var article_params = JSON.parse(article)
+      var article_params = article
 
       // 改完PUT的form 再来优化下，好像有点累赘
       for (var item in data) {
@@ -120,49 +121,53 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
         }
       }
 
-      console.log(111)
-      //如果上传了文件直接替换，不上传新图片data就没有file字段
+      var posterName = article_params.poster
+      console.log(posterName)
       if (req.files.length != 0) {
-        var fileName = id + "_poster"
-        data.file = fileName
-        var filePath = req.files[0].path
-        var file = fs.readFileSync(filePath)
-        if (article_params.file) {
-          fs.unlinkSync(path.resolve('data/images', article_params.file))
-        }
-        fs.writeFileSync(path.resolve('data/images', fileName), file)
-        article_params.file = data.file
+        posterName = Date.now().toString() + "_poster"
+        var posterPath = req.files[0].path
+        fs.writeFileSync(path.resolve('data/images', posterName), fs.readFileSync(posterPath))
       }
 
-      fs.writeFileSync(path.resolve('data/articles', id), JSON.stringify(article_params))
-      console.log(req.accepts('application/json') === 'application/json')
-      if (req.query['_method']) {
-        console.log('')
-        res.redirect("/article/" + id)
-      } else {
-        res.send("/article/" + id)
-      }
+      db.serialize(function(){
+        db.run("UPDATE Article SET title = $title, content = $content, poster = $poster WHERE id = $id",{$title:article_params.title, $content:article_params.content, $poster:posterName, $id:id}
+              ,function(err){
+                if(err){
+                  throw new Error(err)
+                }
+                console.log(req.accepts('application/json') === 'application/json')
+                if (req.query['_method']) {
+                  res.redirect("/article/" + id)
+                } else {
+                  res.send("/article/" + id)
+                }
+              })
+      })
+
     })
+
   })
+
 })
 
 /*DELETE article/:articleId */
 //删除只做文件替换，不做真正的删除，存储成本低
 router.delete('/article/:articleId', function (req, res) {
   var id = req.params.articleId
-  var file = fs.readFileSync(path.resolve('data/articles', id))
-  var params = JSON.parse(file)
 
-  if (params.file) {
-    fs.unlinkSync(path.resolve('data/images', params.file))
-  }
+  db.serialize(function(){
+    db.run("DELETE FROM Article WHERE id=$id",{$id:id},function(err){
+      if(err){
+        throw new Error(err)
+      }
 
-  fs.unlinkSync(path.resolve('data/articles', id))
-  console.log(req.get('accept'))
-  if (req.accepts('text/plain') === 'text/plain') {
-    console.log("delete")
-    res.send("success")
-  }
+      if (req.accepts('text/plain') === 'text/plain') {
+        console.log("delete")
+        res.send("success")
+      }
+
+    })
+  })
 })
 
 module.exports = router
