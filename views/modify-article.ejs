@@ -3,18 +3,18 @@
     <body>
         <div>
             <div id="form">
-                <p>title<input type="text" id="title1" name="title" value="<%=params.title%>"/></p>
-                <p>content<input type="text" id="content1" name="content" value="<%=params.content%>"/></p>
+                <p>title<input type="text" id="title1" name="title" value="<%=article_params.title%>"/></p>
+                <p>content<input type="text" id="content1" name="content" value="<%=article_params.content%>"/></p>
                 <p>image<input type="file" id="image1" name="image" value=""/></p>
             </div>
-            <button name="<%=params.id%>">PUT</button>
+            <button name="<%=article_params.id%>">PUT</button>
         </div>
         <div>
             <p>test _method</p>
-            <form action="http://127.0.0.1:3000/article/<%=params.id%>?_method=PUT" method="POST" enctype="multipart/form-data">
-                <p>title<input type="text" id="title" name="title" value="<%=params.title%>"/></p>
-                <p>content<input type="text" id="content" name="content" value="<%=params.content%>"/></p>
-                <p>image<input type="file" id="image" name="image" value="" /></p>
+            <form action="http://127.0.0.1:3000/article/<%=article_params.id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+                <p>title<input type="text" id="title" name="title" value="<%=article_params.title%>"/></p>
+                <p>content<input type="text" id="content" name="content" value="<%=article_params.content%>"/></p>
+                <p>image<input type="file" id="image" name="image" value="" /></p> 
                 <input type="submit" value="put_method"/> 
             </form>
         </div>
