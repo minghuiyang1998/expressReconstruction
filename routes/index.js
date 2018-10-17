@@ -43,6 +43,7 @@ router.get('/article/:articleId', function (req, res) {
 
   db.serialize(function () {
     db.all("SELECT * FROM Article WHERE id = $aid", { $aid: 1 }, function (err, article) {
+      throw new Error(err)
       article_params = article[0]
       // if (article_params.file) {
       //   article_params.file = "/images/" + article_params.file
@@ -58,6 +59,7 @@ router.get('/articles', function (req, res) {
 
   db.serialize(function () {
     db.all("SELECT * FROM Article", function (err, articles) {
+      throw new Error(err)
       console.log("articles")
       console.log(articles)
       res.render('article-list', { articles: articles })
@@ -71,6 +73,7 @@ router.get('/article/:articleId/edit', function (req, res) {
   var id = req.params.articleId
   db.serialize(function () {
     db.all('SELECT * FROM Article WHERE id = $aid', { $aid: 1 }, function (err, article) {
+      throw new Error(err)
       var article_params = article[0]
       res.render('modify-article', { article_params: article_params })
     })
@@ -91,6 +94,7 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
   //读取原文件
   db.serialize(function () {
     db.all("SELECT * FROM Article WHERE id = $aid", { $aid: 1 }, function (err, article) {
+      throw new Error(err)
       console.log(article)
 
       var article = fs.readFileSync(path.resolve('data/articles', id))
