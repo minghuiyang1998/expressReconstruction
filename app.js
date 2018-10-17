@@ -12,6 +12,15 @@ var app = express();
 var methodOverride = require('method-override')
 app.use(methodOverride('_method'))
 
+// var sqlite3 = require('sqlite3').verbose()
+// var db = new sqlite3.Database('myDatabase.db')
+
+// db.serialize(function(){
+//   db.all("SELECT * FROM Article",function(err,rows){
+//     console.log(rows)
+//   }) 
+// })
+ 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -26,6 +35,8 @@ app.use(express.static(path.join(__dirname, 'data')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/helloworld', helloWorld);
+
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

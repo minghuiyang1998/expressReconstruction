@@ -4,10 +4,10 @@
         <ul id="article-list">
             <%if(articles.length!=0){
                 articles.forEach((a)=>{%>
-                    <li id="<%=a%>">
-                       <a href="http://127.0.0.1:3000/article/<%=a%>"><%=a%></a>
-                       <a href="http://127.0.0.1:3000/article/<%=a%>/edit">modify</a>
-                       <button  name="<%=a%>">delete</button>
+                    <li id="<%=a.title%>">
+                       <a href="http://127.0.0.1:3000/article/<%=a.id%>"><%=a.title%></a>
+                       <a href="http://127.0.0.1:3000/article/<%=a.id%>/edit">modify</a>
+                       <button  name="<%=a.id%>">delete</button>
                     </li>
                 <%})%>
             <%}%>
