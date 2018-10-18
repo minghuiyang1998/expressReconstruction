@@ -134,12 +134,17 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
         db.run("UPDATE Article SET title = $title, content = $content, poster = $poster WHERE id = $id",{$title:article_params.title, $content:article_params.content, $poster:posterName, $id:id}
               ,function(err){
                 if(err)throw err
-                console.log(req.accepts('application/json') === 'application/json')
+                console.log(req.accepts('text/html') === 'text/html')
                 //res.redirect("/article/" + id) 
-                if (req.query['_method']) {
-                  res.redirect("/article/" + id)
-                } else {
-                  res.send("/article/" + id)
+                // if (req.query['_method']) {
+                //   res.redirect("/article/" + id)
+                // } else {
+                //   res.send("/article/" + id)
+                // }
+                if(req.accepts('text/html')=== "text/html"){
+                  res.redirect("/article/"+id)
+                }else{
+                  res.send("/article/"+id)
                 }
               })
       })
