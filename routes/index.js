@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
 /* GET article/new page*/
 router.get('/article/new', function (req, res) {
   console.log("new")
-  res.render('new-article')
+  res.render('new-article',{article:null})
 })
 
 /*POST articles */
@@ -32,17 +32,23 @@ router.post('/articles', upload.any(), function (req, res) {
     fs.writeFileSync(path.resolve('data/images', article.poster), fs.readFileSync(req.files[0].path))
   }
 
-  db.serialize(function(){
-    db.run("INSERT INTO Article(title,content,poster) values($title, $content, $poster)",
-      { 
-        $title: article.title,
-        $content: article.content,
-        $poster: article.poster
-      }, function(err) {
-        if(err) throw err 
-        res.redirect("/article/" + this.lastID)
-      })
-  })
+
+  if(article.title.length>20){
+    article.err = "title cannot exceed 20 letters!"
+    res.render('new-article',{article:article})
+  }else{
+    db.serialize(function(){
+      db.run("INSERT INTO Article(title,content,poster) values($title, $content, $poster)",
+        { 
+          $title: article.title,
+          $content: article.content,
+          $poster: article.poster
+        }, function(err) {
+          if(err) throw err 
+          res.redirect("/article/" + this.lastID)
+        })
+    })
+  }
 })
 
 /*GET article/:articleId page */
@@ -129,6 +135,7 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
               ,function(err){
                 if(err)throw err
                 console.log(req.accepts('application/json') === 'application/json')
+                //res.redirect("/article/" + id) 
                 if (req.query['_method']) {
                   res.redirect("/article/" + id)
                 } else {
@@ -153,11 +160,13 @@ router.delete('/article/:articleId', function (req, res) {
       if(err){
         throw new Error(err)
       }
+      res.send("success")
+      // if (req.accepts('text/plain') === 'text/plain') {
+      //   console.log("delete")
+      //   res.send("success")
+      // }else{
 
-      if (req.accepts('text/plain') === 'text/plain') {
-        console.log("delete")
-        res.send("success")
-      }
+      // }
 
     })
   })
