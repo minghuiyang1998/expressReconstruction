@@ -25,6 +25,7 @@ router.post('/articles', upload.any(), function (req, res) {
   var article = {}
   article.title = req.body.title
   article.content = req.body.content
+  console.log(req.files[0])
 
   if (req.files.length && req.files[0].fieldname == 'poster') {
     article.poster = req.files[0].filename
@@ -67,11 +68,8 @@ router.get('/articles', function (req, res) {
 
   db.serialize(function () {
     db.all("SELECT * FROM Article", function (err, articles) {
-      if(err){
-        throw new Error(err)
-      }
-      console.log("articles")
-      console.log(articles)
+      if(err) throw err
+      
       res.render('article-list', { articles: articles })
     })
   })
@@ -83,12 +81,14 @@ router.get('/article/:articleId/edit', function (req, res) {
   var id = req.params.articleId
   db.serialize(function () {
     db.get('SELECT * FROM Article WHERE id = $aid', { $aid: id }, function (err, article) {
-      if(err){
-        throw new Error(err)
+      if(err)throw err
+
+      if(article){
+        res.render('modify-article', { article_params: article})
+      }else{
+        res.send(404)
       }
 
-      var article_params = article
-      res.render('modify-article', { article_params: article_params })
     })
   })
 })
@@ -104,9 +104,7 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
   //读取原文件
   db.serialize(function () {
     db.get("SELECT * FROM Article WHERE id = $aid", { $aid: id }, function (err, article) {
-      if(err){
-        throw new Error(err)
-      }
+      if(err)throw err
 
       console.log(article)
       var article_params = article
@@ -129,9 +127,7 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
       db.serialize(function(){
         db.run("UPDATE Article SET title = $title, content = $content, poster = $poster WHERE id = $id",{$title:article_params.title, $content:article_params.content, $poster:posterName, $id:id}
               ,function(err){
-                if(err){
-                  throw new Error(err)
-                }
+                if(err)throw err
                 console.log(req.accepts('application/json') === 'application/json')
                 if (req.query['_method']) {
                   res.redirect("/article/" + id)
