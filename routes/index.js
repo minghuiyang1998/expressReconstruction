@@ -19,29 +19,28 @@ router.get('/article/new', function (req, res) {
   console.log("new")
   res.render('new-article')
 })
+
 /*POST articles */
 router.post('/articles', upload.any(), function (req, res) {
-  var data = {}
-  data.title = req.body.title
-  data.content = req.body.content
+  var article = {}
+  article.title = req.body.title
+  article.content = req.body.content
 
-  var  posterName = null
-  if (req.files.length != 0) {
-    posterName = Date.now().toString() + '_poster'
-    var posterPath = req.files[0].path
-    fs.writeFileSync(path.resolve('data/images',posterName), fs.readFileSync(posterPath))
+  if (req.files.length && req.files[0].fieldname == 'poster') {
+    article.poster = req.files[0].filename
+    fs.writeFileSync(path.resolve('data/images', article.poster), fs.readFileSync(req.files[0].path))
   }
 
   db.serialize(function(){
-    db.run("INSERT INTO Article(title,content,poster) values($title, $content, $poster)",{$title:data.title, $content:data.content, $poster:posterName}
-          ,function(err){
-            if(err){
-              throw new Error(err)
-            }
-            console.log(this)
-            res.redirect("/article/" + this.lastID)
-          })
-
+    db.run("INSERT INTO Article(title,content,poster) values($title, $content, $poster)",
+      { 
+        $title: article.title,
+        $content: article.content,
+        $poster: article.poster
+      }, function(err) {
+        if(err) throw err 
+        res.redirect("/article/" + this.lastID)
+      })
   })
 })
 
@@ -51,15 +50,13 @@ router.get('/article/:articleId', function (req, res) {
 
   db.serialize(function () {
     db.get("SELECT * FROM Article WHERE id = $aid", { $aid: id }, function (err, article) {
-      if(err){
-        throw new Error(err)
-      }
+      if(err) throw err 
 
-      var article_params = article
-      if (article_params.poster) {
-        article_params.poster = "/images/" + article_params.poster
+      if (article) {
+        res.render('show-article', { article_params: article })
+      } else {
+        res.send(404)
       }
-      res.render('show-article', { article_params: article_params })
     })
 
   })
