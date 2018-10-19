@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
 /* GET article/new page*/
 router.get('/article/new', function (req, res) {
   console.log("new")
-  res.render('new-article',{article:null})
+  res.render('new-article', { article: null })
 })
 
 /*POST articles */
@@ -33,18 +33,18 @@ router.post('/articles', upload.any(), function (req, res) {
   }
 
 
-  if(article.title.length>20){
-    article.err = "title cannot exceed 20 letters!"
-    res.render('new-article',{article:article})
-  }else{
-    db.serialize(function(){
+  if (article.title.length > 20) {
+    article.err = "title cannot exceed 20 letters!"//err单独放
+    res.render('new-article', { article: article })
+  } else {
+    db.serialize(function () {
       db.run("INSERT INTO Article(title,content,poster) values($title, $content, $poster)",
-        { 
+        {
           $title: article.title,
           $content: article.content,
           $poster: article.poster
-        }, function(err) {
-          if(err) throw err 
+        }, function (err) {
+          if (err) throw err
           res.redirect("/article/" + this.lastID)
         })
     })
@@ -57,7 +57,7 @@ router.get('/article/:articleId', function (req, res) {
 
   db.serialize(function () {
     db.get("SELECT * FROM Article WHERE id = $aid", { $aid: id }, function (err, article) {
-      if(err) throw err 
+      if (err) throw err
 
       if (article) {
         res.render('show-article', { article_params: article })
@@ -74,8 +74,8 @@ router.get('/articles', function (req, res) {
 
   db.serialize(function () {
     db.all("SELECT * FROM Article", function (err, articles) {
-      if(err) throw err
-      
+      if (err) throw err
+
       res.render('article-list', { articles: articles })
     })
   })
@@ -87,11 +87,11 @@ router.get('/article/:articleId/edit', function (req, res) {
   var id = req.params.articleId
   db.serialize(function () {
     db.get('SELECT * FROM Article WHERE id = $aid', { $aid: id }, function (err, article) {
-      if(err)throw err
+      if (err) throw err
 
-      if(article){
-        res.render('modify-article', { article_params: article})
-      }else{
+      if (article) {
+        res.render('modify-article', { article_params: article })
+      } else {
         res.send(404)
       }
 
@@ -110,7 +110,7 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
   //读取原文件
   db.serialize(function () {
     db.get("SELECT * FROM Article WHERE id = $aid", { $aid: id }, function (err, article) {
-      if(err)throw err
+      if (err) throw err
 
       console.log(article)
       var article_params = article
@@ -130,23 +130,23 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
         fs.writeFileSync(path.resolve('data/images', posterName), fs.readFileSync(posterPath))
       }
 
-      db.serialize(function(){
-        db.run("UPDATE Article SET title = $title, content = $content, poster = $poster WHERE id = $id",{$title:article_params.title, $content:article_params.content, $poster:posterName, $id:id}
-              ,function(err){
-                if(err)throw err
-                console.log(req.accepts('text/html') === 'text/html')
-                //res.redirect("/article/" + id) 
-                // if (req.query['_method']) {
-                //   res.redirect("/article/" + id)
-                // } else {
-                //   res.send("/article/" + id)
-                // }
-                if(req.accepts('text/html')=== "text/html"){
-                  res.redirect("/article/"+id)
-                }else{
-                  res.send("/article/"+id)
-                }
-              })
+      db.serialize(function () {
+        db.run("UPDATE Article SET title = $title, content = $content, poster = $poster WHERE id = $id", { $title: article_params.title, $content: article_params.content, $poster: posterName, $id: id }
+          , function (err) {
+            if (err) throw err
+            console.log(req.accepts('text/html') === 'text/html')
+            //res.redirect("/article/" + id) 
+            // if (req.query['_method']) {
+            //   res.redirect("/article/" + id)
+            // } else {
+            //   res.send("/article/" + id)
+            // }
+            if (req.accepts('text/html') === "text/html") {
+              res.redirect("/article/" + id)
+            } else {
+              res.send("/article/" + id)
+            }
+          })
       })
 
     })
@@ -160,9 +160,9 @@ router.put('/article/:articleId', upload.any(), function (req, res) {
 router.delete('/article/:articleId', function (req, res) {
   var id = req.params.articleId
 
-  db.serialize(function(){
-    db.run("DELETE FROM Article WHERE id=$id",{$id:id},function(err){
-      if(err){
+  db.serialize(function () {
+    db.run("DELETE FROM Article WHERE id=$id", { $id: id }, function (err) {
+      if (err) {
         throw new Error(err)
       }
       res.send("success")
@@ -178,4 +178,3 @@ router.delete('/article/:articleId', function (req, res) {
 })
 
 module.exports = router
-  

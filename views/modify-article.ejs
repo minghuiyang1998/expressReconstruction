@@ -11,7 +11,7 @@
         </div>
         <div>
             <p>test _method</p>
-            <form action="http://127.0.0.1:3000/article/<%=article_params.id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+            <form action="/article/<%=article_params.id%>?_method=PUT" method="POST" enctype="multipart/form-data">
                 <p>title<input type="text" id="title" name="title" value="<%=article_params.title%>"/></p>
                 <p>content<input type="text" id="content" name="content" value="<%=article_params.content%>"/></p>
                 <p>image<input type="file" id="image" name="image" value="" /></p> 
@@ -36,7 +36,7 @@
                }
 
                var xhr = new XMLHttpRequest()
-               xhr.open('PUT','http://127.0.0.1:3000/article/'+e.target.name)
+               xhr.open('PUT','/article/'+e.target.name)
                xhr.setRequestHeader('Accept','application/json')
                xhr.send(data)
                xhr.onreadystatechange = function(){

@@ -5,8 +5,8 @@
             <%if(articles.length!=0){
                 articles.forEach((a)=>{%>
                     <li id="<%=a.id%>">
-                       <a href="http://127.0.0.1:3000/article/<%=a.id%>"><%=a.id%></a>
-                       <a href="http://127.0.0.1:3000/article/<%=a.id%>/edit">modify</a>
+                       <a href="/article/<%=a.id%>"><%=a.id%></a>
+                       <a href="/article/<%=a.id%>/edit">modify</a>
                        <button  name="<%=a.id%>">delete</button>
                     </li>
                 <%})%>
@@ -16,7 +16,7 @@
         <script type="text/javascript">
            $("button").on("click",function(e){
                $.ajax({
-                   url:'http://127.0.0.1:3000/article/'+e.target.name,
+                   url:'/article/'+e.target.name,
                    type:'DELETE',
                    headers:{Accept:"text/plain"},
                    success:function(data){
